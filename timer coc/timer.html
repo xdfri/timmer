@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>COC </title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .timer-bg {
+            background-color: #022437; 
+        }
+        .fullscreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            background-color: rgba(12, 74, 110, 0.9);
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body class="flex flex-col items-center justify-center h-screen bg-gray-900 text-white">
+    <!-- Container untuk timer dan konten lain -->
+    <div id="timerContainer" class="text-center p-8 rounded-lg shadow-lg timer-bg max-w-lg w-full">
+        <!-- Gambar di atas div -->
+         <div class="bg-cyan-950 p-4 rounded-lg shadow-lg ">
+        <img src="img/pcn.png" alt="foto" class="mb-6 w-32 h-32 object-cover rounded-full mx-auto shadow-lg">
+
+        <!-- Nama di bawah gambar -->
+        <h2 class="text-3xl font-bold mb-6">Cemerlang Of Champions</h2>
+
+        <!-- Timer div -->
+        <div class="mb-6">
+            <label for="timeInput" class="block text-lg">Durasi (menit):</label>
+            <input id="timeInput" type="number" min="1" class="mt-2 px-4 py-2 border border-gray-300 rounded-lg bg-gray-800 text-white w-full max-w-xs" placeholder="Masukkan menit">
+        </div>
+        <div id="timer" class="text-7xl font-mono mb-6">00:00</div>
+        <div class="flex flex-col sm:flex-row justify-center gap-4 mb-6">
+            <button id="startButton" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">Mulai</button>
+            <button id="resetButton" class="px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition">Reset</button>
+            <button id="fullscreenButton" class="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition">Layar Penuh</button>
+        </div>
+    </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const timerElement = document.getElementById('timer');
+            const startButton = document.getElementById('startButton');
+            const resetButton = document.getElementById('resetButton');
+            const fullscreenButton = document.getElementById('fullscreenButton');
+            const timerContainer = document.getElementById('timerContainer');
+            const timeInput = document.getElementById('timeInput');
+            
+            let countdown;
+            let timeLeft = 0;
+
+            function formatTime(seconds) {
+                const minutes = Math.floor(seconds / 60);
+                const secs = seconds % 60;
+                return `${String(minutes).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+            }
+
+            function updateTimer() {
+                timerElement.textContent = formatTime(timeLeft);
+                if (timeLeft <= 0) {
+                    clearInterval(countdown);
+                    alert('Waktu habis!');
+                }
+                timeLeft--;
+            }
+
+            startButton.addEventListener('click', () => {
+                const minutes = parseInt(timeInput.value);
+                if (isNaN(minutes) || minutes <= 0) {
+                    alert('Silakan masukkan durasi yang valid.');
+                    return;
+                }
+                timeLeft = minutes * 60;
+                if (countdown) clearInterval(countdown);
+                countdown = setInterval(updateTimer, 1000);
+            });
+
+            resetButton.addEventListener('click', () => {
+                if (countdown) clearInterval(countdown);
+                timeInput.value = '';
+                timerElement.textContent = '00:00';
+            });
+
+            fullscreenButton.addEventListener('click', () => {
+                if (document.fullscreenElement) {
+                    document.exitFullscreen();
+                    fullscreenButton.textContent = 'Layar Penuh';
+                } else {
+                    timerContainer.requestFullscreen();
+                    fullscreenButton.textContent = 'Keluar Layar Penuh';
+                }
+            });
+
+            // Initialize timer display
+            timerElement.textContent = '00:00';
+        });
+    </script>
+</body>
+</html>
